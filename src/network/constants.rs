@@ -72,14 +72,14 @@ impl Network {
     /// ```rust
     /// use bitcoin::network::constants::Network;
     ///
-    /// assert_eq!(Some(Network::Bitcoin), Network::from_magic(0xD9B4BEF9));
+    /// assert_eq!(Some(Network::Bitcoin), Network::from_magic(0xDBB6C0FB));
     /// assert_eq!(None, Network::from_magic(0xFFFFFFFF));
     /// ```
     pub fn from_magic(magic: u32) -> Option<Network> {
         // Note: any new entries here must be added to `magic` below
         match magic {
-            0xD9B4BEF9 => Some(Network::Bitcoin),
-            0x0709110B => Some(Network::Testnet),
+            0xDBB6C0FB => Some(Network::Bitcoin),
+            0xF1C8D2FD => Some(Network::Testnet),
             0x40CF030A => Some(Network::Signet),
             0xDAB5BFFA => Some(Network::Regtest),
             _ => None
@@ -95,13 +95,13 @@ impl Network {
     /// use bitcoin::network::constants::Network;
     ///
     /// let network = Network::Bitcoin;
-    /// assert_eq!(network.magic(), 0xD9B4BEF9);
+    /// assert_eq!(network.magic(), 0xDBB6C0FB);
     /// ```
     pub fn magic(self) -> u32 {
         // Note: any new entries here must be added to `from_magic` above
         match self {
-            Network::Bitcoin => 0xD9B4BEF9,
-            Network::Testnet => 0x0709110B,
+            Network::Bitcoin => 0xDBB6C0FB,
+            Network::Testnet => 0xF1C8D2FD,
             Network::Signet  => 0x40CF030A,
             Network::Regtest => 0xDAB5BFFA,
         }

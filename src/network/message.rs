@@ -592,16 +592,16 @@ mod test {
 
     #[test]
     fn serialize_verack_test() {
-        assert_eq!(serialize(&RawNetworkMessage { magic: 0xd9b4bef9, payload: NetworkMessage::Verack }),
-                             vec![0xf9, 0xbe, 0xb4, 0xd9, 0x76, 0x65, 0x72, 0x61,
+        assert_eq!(serialize(&RawNetworkMessage { magic: 0xDBB6C0FB, payload: NetworkMessage::Verack }),
+                             vec![0xfb, 0xc0, 0xb6, 0xdb, 0x76, 0x65, 0x72, 0x61,
                                   0x63, 0x6B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                                   0x00, 0x00, 0x00, 0x00, 0x5d, 0xf6, 0xe0, 0xe2]);
     }
 
     #[test]
     fn serialize_ping_test() {
-        assert_eq!(serialize(&RawNetworkMessage { magic: 0xd9b4bef9, payload: NetworkMessage::Ping(100) }),
-                             vec![0xf9, 0xbe, 0xb4, 0xd9, 0x70, 0x69, 0x6e, 0x67,
+        assert_eq!(serialize(&RawNetworkMessage { magic: 0xDBB6C0FB, payload: NetworkMessage::Ping(100) }),
+                             vec![0xfb, 0xc0, 0xb6, 0xdb, 0x70, 0x69, 0x6e, 0x67,
                                   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                                   0x08, 0x00, 0x00, 0x00, 0x24, 0x67, 0xf1, 0x1d,
                                   0x64, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
@@ -610,16 +610,16 @@ mod test {
 
     #[test]
     fn serialize_mempool_test() {
-        assert_eq!(serialize(&RawNetworkMessage { magic: 0xd9b4bef9, payload: NetworkMessage::MemPool }),
-                             vec![0xf9, 0xbe, 0xb4, 0xd9, 0x6d, 0x65, 0x6d, 0x70,
+        assert_eq!(serialize(&RawNetworkMessage { magic: 0xDBB6C0FB, payload: NetworkMessage::MemPool }),
+                             vec![0xfb, 0xc0, 0xb6, 0xdb, 0x6d, 0x65, 0x6d, 0x70,
                                   0x6f, 0x6f, 0x6c, 0x00, 0x00, 0x00, 0x00, 0x00,
                                   0x00, 0x00, 0x00, 0x00, 0x5d, 0xf6, 0xe0, 0xe2]);
     }
 
     #[test]
     fn serialize_getaddr_test() {
-        assert_eq!(serialize(&RawNetworkMessage { magic: 0xd9b4bef9, payload: NetworkMessage::GetAddr }),
-                             vec![0xf9, 0xbe, 0xb4, 0xd9, 0x67, 0x65, 0x74, 0x61,
+        assert_eq!(serialize(&RawNetworkMessage { magic: 0xDBB6C0FB, payload: NetworkMessage::GetAddr }),
+                             vec![0xfb, 0xc0, 0xb6, 0xdb, 0x67, 0x65, 0x74, 0x61,
                                   0x64, 0x64, 0x72, 0x00, 0x00, 0x00, 0x00, 0x00,
                                   0x00, 0x00, 0x00, 0x00, 0x5d, 0xf6, 0xe0, 0xe2]);
     }
@@ -627,20 +627,21 @@ mod test {
     #[test]
     fn deserialize_getaddr_test() {
         let msg = deserialize(
-            &[0xf9, 0xbe, 0xb4, 0xd9, 0x67, 0x65, 0x74, 0x61,
+            &[0xfb, 0xc0, 0xb6, 0xdb, 0x67, 0x65, 0x74, 0x61,
                 0x64, 0x64, 0x72, 0x00, 0x00, 0x00, 0x00, 0x00,
                 0x00, 0x00, 0x00, 0x00, 0x5d, 0xf6, 0xe0, 0xe2]);
-        let preimage = RawNetworkMessage { magic: 0xd9b4bef9, payload: NetworkMessage::GetAddr };
+        let preimage = RawNetworkMessage { magic: 0xDBB6C0FB, payload: NetworkMessage::GetAddr };
         assert!(msg.is_ok());
         let msg : RawNetworkMessage = msg.unwrap();
         assert_eq!(preimage.magic, msg.magic);
         assert_eq!(preimage.payload, msg.payload);
     }
 
+    // TODO(litecoin): replace this with a real litecoin p2p message
     #[test]
     fn deserialize_version_test() {
         let msg = deserialize::<RawNetworkMessage>(
-            &[  0xf9, 0xbe, 0xb4, 0xd9, 0x76, 0x65, 0x72, 0x73,
+            &[  0xfb, 0xc0, 0xb6, 0xdb, 0x76, 0x65, 0x72, 0x73,
                 0x69, 0x6f, 0x6e, 0x00, 0x00, 0x00, 0x00, 0x00,
                 0x66, 0x00, 0x00, 0x00, 0xbe, 0x61, 0xb8, 0x27,
                 0x7f, 0x11, 0x01, 0x00, 0x0d, 0x04, 0x00, 0x00,
@@ -659,7 +660,7 @@ mod test {
 
         assert!(msg.is_ok());
         let msg = msg.unwrap();
-        assert_eq!(msg.magic, 0xd9b4bef9);
+        assert_eq!(msg.magic, 0xDBB6C0FB);
         if let NetworkMessage::Version(version_msg) = msg.payload {
             assert_eq!(version_msg.version, 70015);
             assert_eq!(version_msg.services, ServiceFlags::NETWORK | ServiceFlags::BLOOM | ServiceFlags::WITNESS | ServiceFlags::NETWORK_LIMITED);
@@ -673,9 +674,10 @@ mod test {
         }
     }
 
+    // TODO(litecoin): replace this with a real litecoin p2p message
     #[test]
     fn deserialize_partial_message_test() {
-        let data = [  0xf9, 0xbe, 0xb4, 0xd9, 0x76, 0x65, 0x72, 0x73,
+        let data = [  0xfb, 0xc0, 0xb6, 0xdb, 0x76, 0x65, 0x72, 0x73,
             0x69, 0x6f, 0x6e, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x66, 0x00, 0x00, 0x00, 0xbe, 0x61, 0xb8, 0x27,
             0x7f, 0x11, 0x01, 0x00, 0x0d, 0x04, 0x00, 0x00,
@@ -696,7 +698,7 @@ mod test {
 
         let (msg, consumed) = msg.unwrap();
         assert_eq!(consumed, data.to_vec().len() - 2);
-        assert_eq!(msg.magic, 0xd9b4bef9);
+        assert_eq!(msg.magic, 0xDBB6C0FB);
         if let NetworkMessage::Version(version_msg) = msg.payload {
             assert_eq!(version_msg.version, 70015);
             assert_eq!(version_msg.services, ServiceFlags::NETWORK | ServiceFlags::BLOOM | ServiceFlags::WITNESS | ServiceFlags::NETWORK_LIMITED);

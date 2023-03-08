@@ -41,13 +41,13 @@ pub const WITNESS_SCALE_FACTOR: usize = 4;
 /// The maximum allowed number of signature check operations in a block
 pub const MAX_BLOCK_SIGOPS_COST: i64 = 80_000;
 /// Mainnet (bitcoin) pubkey address prefix.
-pub const PUBKEY_ADDRESS_PREFIX_MAIN: u8 = 48; // 0x00
+pub const PUBKEY_ADDRESS_PREFIX_MAIN: u8 = 48; // 0x30
 /// Mainnet (bitcoin) script address prefix.
-pub const SCRIPT_ADDRESS_PREFIX_MAIN: u8 = 5; // 0x05
-/// Test (tesnet, signet, regtest) pubkey address prefix.
+pub const SCRIPT_ADDRESS_PREFIX_MAIN: u8 = 50; // 0x32
+/// Test (testnet, signet, regtest) pubkey address prefix.
 pub const PUBKEY_ADDRESS_PREFIX_TEST: u8 = 111; // 0x6f
-/// Test (tesnet, signet, regtest) script address prefix.
-pub const SCRIPT_ADDRESS_PREFIX_TEST: u8 = 196; // 0xc4
+/// Test (testnet, signet, regtest) script address prefix.
+pub const SCRIPT_ADDRESS_PREFIX_TEST: u8 = 58; // 0x3a
 /// The maximum allowed script size.
 pub const MAX_SCRIPT_ELEMENT_SIZE: usize = 520;
 /// How may blocks between halvings.
@@ -80,7 +80,7 @@ fn bitcoin_genesis_tx() -> Transaction {
     // Inputs
     let in_script = script::Builder::new().push_scriptint(486604799)
                                           .push_scriptint(4)
-                                          .push_slice(b"The Times 03/Jan/2009 Chancellor on brink of second bailout for banks")
+                                          .push_slice("NY Times 05/Oct/2011 Steve Jobs, Apple’s Visionary, Dies at 56".as_bytes())
                                           .into_script();
     ret.input.push(TxIn {
         previous_output: OutPoint::null(),
@@ -91,7 +91,7 @@ fn bitcoin_genesis_tx() -> Transaction {
 
     // Outputs
     let script_bytes: Result<Vec<u8>, hex::Error> =
-        HexIterator::new("04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5f").unwrap()
+        HexIterator::new("040184710fa689ad5023690c80f3a49c8f13f8d45b8c857fbcbc8bc4a8e4d3eb4b10f4d4604fa08dce601aaf0f470216fe1b51850b4acf21b179c45070ac7b03a9").unwrap()
             .collect();
     let out_script = script::Builder::new()
         .push_slice(script_bytes.unwrap().as_slice())
@@ -118,9 +118,9 @@ pub fn genesis_block(network: Network) -> Block {
                     version: 1,
                     prev_blockhash: Hash::all_zeros(),
                     merkle_root,
-                    time: 1231006505,
-                    bits: 0x1d00ffff,
-                    nonce: 2083236893
+                    time: 1317972665,
+                    bits: 0x1e0ffff0,
+                    nonce: 2084524493
                 },
                 txdata,
             }
@@ -131,9 +131,9 @@ pub fn genesis_block(network: Network) -> Block {
                     version: 1,
                     prev_blockhash: Hash::all_zeros(),
                     merkle_root,
-                    time: 1296688602,
-                    bits: 0x1d00ffff,
-                    nonce: 414098458
+                    time: 1486949366,
+                    bits: 0x1e0ffff0,
+                    nonce: 293345
                 },
                 txdata,
             }
@@ -168,8 +168,8 @@ pub fn genesis_block(network: Network) -> Block {
 }
 
 // Mainnet value can be verified at https://github.com/lightning/bolts/blob/master/00-introduction.md
-const GENESIS_BLOCK_HASH_BITCOIN: [u8; 32] = [111, 226, 140, 10, 182, 241, 179, 114, 193, 166, 162, 70, 174, 99, 247, 79, 147, 30, 131, 101, 225, 90, 8, 156, 104, 214, 25, 0, 0, 0, 0, 0];
-const GENESIS_BLOCK_HASH_TESTNET: [u8; 32] = [67, 73, 127, 215, 248, 38, 149, 113, 8, 244, 163, 15, 217, 206, 195, 174, 186, 121, 151, 32, 132, 233, 14, 173, 1, 234, 51, 9, 0, 0, 0, 0];
+const GENESIS_BLOCK_HASH_BITCOIN: [u8; 32] = [226, 191, 4, 126, 126, 90, 25, 26, 164, 239, 52, 211, 20, 151, 157, 201, 152, 110, 15, 25, 37, 30, 218, 186, 89, 64, 253, 31, 227, 101, 167, 18];
+const GENESIS_BLOCK_HASH_TESTNET: [u8; 32] = [160, 41, 62, 78, 235, 61, 166, 230, 245, 111, 129, 237, 89, 95, 87, 136, 13, 26, 33, 86, 158, 19, 238, 253, 217, 81, 40, 75, 90, 98, 102, 73];
 const GENESIS_BLOCK_HASH_SIGNET: [u8; 32] = [246, 30, 238, 59, 99, 163, 128, 164, 119, 160, 99, 175, 50, 178, 187, 201, 124, 159, 249, 240, 31, 44, 66, 37, 233, 115, 152, 129, 8, 0, 0, 0];
 const GENESIS_BLOCK_HASH_REGTEST: [u8; 32] = [6, 34, 110, 70, 17, 26, 11, 89, 202, 175, 18, 96, 67, 235, 91, 191, 40, 195, 79, 58, 94, 51, 42, 31, 199, 178, 183, 60, 241, 136, 145, 15];
 
@@ -211,16 +211,16 @@ mod test {
         assert_eq!(gen.input[0].previous_output.txid, Hash::all_zeros());
         assert_eq!(gen.input[0].previous_output.vout, 0xFFFFFFFF);
         assert_eq!(serialize(&gen.input[0].script_sig),
-                   Vec::from_hex("4d04ffff001d0104455468652054696d65732030332f4a616e2f32303039204368616e63656c6c6f72206f6e206272696e6b206f66207365636f6e64206261696c6f757420666f722062616e6b73").unwrap());
+                   Vec::from_hex("4804ffff001d0104404e592054696d65732030352f4f63742f32303131205374657665204a6f62732c204170706c65e280997320566973696f6e6172792c2044696573206174203536").unwrap());
 
         assert_eq!(gen.input[0].sequence, Sequence::MAX);
         assert_eq!(gen.output.len(), 1);
         assert_eq!(serialize(&gen.output[0].script_pubkey),
-                   Vec::from_hex("434104678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5fac").unwrap());
+                   Vec::from_hex("4341040184710fa689ad5023690c80f3a49c8f13f8d45b8c857fbcbc8bc4a8e4d3eb4b10f4d4604fa08dce601aaf0f470216fe1b51850b4acf21b179c45070ac7b03a9ac").unwrap());
         assert_eq!(gen.output[0].value, 50 * COIN_VALUE);
         assert_eq!(gen.lock_time, PackedLockTime::ZERO);
 
-        assert_eq!(gen.wtxid().to_hex(), "4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b");
+        assert_eq!(gen.wtxid().to_hex(), "97ddfbbae6be97fd6cdf3e7ca13232a3afff2353e29badfab7f73011edd4ced9");
     }
 
     #[test]
@@ -229,12 +229,12 @@ mod test {
 
         assert_eq!(gen.header.version, 1);
         assert_eq!(gen.header.prev_blockhash, Hash::all_zeros());
-        assert_eq!(gen.header.merkle_root.to_hex(), "4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b");
+        assert_eq!(gen.header.merkle_root.to_hex(), "97ddfbbae6be97fd6cdf3e7ca13232a3afff2353e29badfab7f73011edd4ced9");
 
-        assert_eq!(gen.header.time, 1231006505);
-        assert_eq!(gen.header.bits, 0x1d00ffff);
-        assert_eq!(gen.header.nonce, 2083236893);
-        assert_eq!(gen.header.block_hash().to_hex(), "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f");
+        assert_eq!(gen.header.time, 1317972665);
+        assert_eq!(gen.header.bits, 0x1e0ffff0);
+        assert_eq!(gen.header.nonce, 2084524493);
+        assert_eq!(gen.header.block_hash().to_hex(), "12a765e31ffd4059bada1e25190f6e98c99d9714d334efa41a195a7e7e04bfe2");
     }
 
     #[test]
@@ -242,11 +242,11 @@ mod test {
         let gen = genesis_block(Network::Testnet);
         assert_eq!(gen.header.version, 1);
         assert_eq!(gen.header.prev_blockhash, Hash::all_zeros());
-        assert_eq!(gen.header.merkle_root.to_hex(), "4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b");
-        assert_eq!(gen.header.time, 1296688602);
-        assert_eq!(gen.header.bits, 0x1d00ffff);
-        assert_eq!(gen.header.nonce, 414098458);
-        assert_eq!(gen.header.block_hash().to_hex(), "000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943");
+        assert_eq!(gen.header.merkle_root.to_hex(), "97ddfbbae6be97fd6cdf3e7ca13232a3afff2353e29badfab7f73011edd4ced9");
+        assert_eq!(gen.header.time, 1486949366);
+        assert_eq!(gen.header.bits, 0x1e0ffff0);
+        assert_eq!(gen.header.nonce, 293345);
+        assert_eq!(gen.header.block_hash().to_hex(), "4966625a4b2851d9fdee139e56211a0d88575f59ed816ff5e6a63deb4e3e29a0");
     }
 
     #[test]
@@ -301,7 +301,7 @@ mod test {
     #[test]
     fn mainnet_chain_hash_test_vector() {
         let got = ChainHash::using_genesis_block(Network::Bitcoin).to_hex();
-        let want = "6fe28c0ab6f1b372c1a6a246ae63f74f931e8365e15a089c68d6190000000000";
+        let want = "e2bf047e7e5a191aa4ef34d314979dc9986e0f19251edaba5940fd1fe365a712";
         assert_eq!(got, want);
     }
 }
